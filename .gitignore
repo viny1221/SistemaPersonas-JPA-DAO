@@ -1,0 +1,13 @@
+target/
+.idea/
+*.iml
+nbproject/private/
+.env
+.env.*
+!.env.example
+*.log
+*.class
+*.hprof
+hs_err_pid*
+.DS_Store
+Thumbs.db
