@@ -26,6 +26,10 @@ src/main/resources/
 
 CÓMO EJECUTAR EN NETBEANS
 -------------------------
+Para descargar y ejecutar en otra PC con Docker, sigue README.md.
+En Windows: extrae el ZIP y abre "Iniciar con Docker.cmd" con Docker Desktop encendido.
+Docker inicia Java y MySQL; Workbench puede conectarse en 127.0.0.1:3307.
+
 1. Asegúrate de que MySQL esté encendido en localhost:3306.
 2. Abre NetBeans.
 3. File > Open Project y selecciona esta carpeta.

@@ -1,0 +1,21 @@
+name: Verificar programa y MySQL
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  portabilidad:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ejecutar CRUD y comprobar persistencia
+        run: python3 tests/verificar_portabilidad.py
+      - name: Guardar informe
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portabilidad
+          path: target/portabilidad.json
+          if-no-files-found: ignore

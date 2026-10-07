@@ -19,7 +19,7 @@ public final class JPAUtil {
             return;
         }
 
-        String url = "jdbc:mysql://localhost:3306/escuela"
+        String url = "jdbc:mysql://" + obtenerHost() + ":" + obtenerPuerto() + "/" + obtenerBase()
                 + "?createDatabaseIfNotExist=true"
                 + "&useSSL=false"
                 + "&allowPublicKeyRetrieval=true"
@@ -33,6 +33,31 @@ public final class JPAUtil {
         propiedades.put("jakarta.persistence.jdbc.password", contrasena);
 
         emf = Persistence.createEntityManagerFactory("SistemaPersonasPU", propiedades);
+    }
+
+    public static String obtenerHost() {
+        return valorEntorno("MYSQL_HOST", "localhost");
+    }
+
+    public static int obtenerPuerto() {
+        int puerto = Integer.parseInt(valorEntorno("MYSQL_PORT", "3306"));
+        if (puerto < 1 || puerto > 65535) {
+            throw new IllegalArgumentException("MYSQL_PORT debe estar entre 1 y 65535.");
+        }
+        return puerto;
+    }
+
+    public static String obtenerBase() {
+        String base = valorEntorno("MYSQL_DATABASE", "escuela");
+        if (!base.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
+            throw new IllegalArgumentException("MYSQL_DATABASE no es un nombre valido.");
+        }
+        return base;
+    }
+
+    private static String valorEntorno(String nombre, String predeterminado) {
+        String valor = System.getenv(nombre);
+        return valor == null || valor.isBlank() ? predeterminado : valor.trim();
     }
 
     public static EntityManager getEntityManager() {

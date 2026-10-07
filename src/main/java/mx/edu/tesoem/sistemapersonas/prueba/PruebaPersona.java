@@ -18,8 +18,9 @@ public class PruebaPersona {
         System.out.println("====================================");
         System.out.println(" SISTEMA DE PERSONAS - JPA + DAO");
         System.out.println("====================================");
-        System.out.println("Base de datos: MySQL / escuela");
-        System.out.println("Puerto: 3306");
+        System.out.println("Base de datos: MySQL / " + JPAUtil.obtenerBase());
+        System.out.println("Servidor: " + JPAUtil.obtenerHost());
+        System.out.println("Puerto: " + JPAUtil.obtenerPuerto());
         System.out.println();
 
         // Datos de conexión a MySQL
@@ -49,7 +50,7 @@ public class PruebaPersona {
 
             System.out.println("Conexión JPA iniciada correctamente.");
             System.out.println(
-                    "La base 'escuela' y la tabla 'persona' "
+                    "La base '" + JPAUtil.obtenerBase() + "' y la tabla 'persona' "
                     + "se crean si hacen falta."
             );
             System.out.println();
@@ -67,7 +68,7 @@ public class PruebaPersona {
             System.err.println();
             System.err.println(
                     "Verifica que MySQL esté encendido, "
-                    + "que use el puerto 3306 y que "
+                    + "que el servidor y puerto configurados sean correctos y que "
                     + "el usuario/contraseña sean correctos."
             );
 
