@@ -1,4 +1,4 @@
-name: Verificar programa y MySQL
+name: Verificar Java y MySQL local
 on:
   push:
   pull_request:
@@ -6,16 +6,28 @@ permissions:
   contents: read
 jobs:
   portabilidad:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - name: Ejecutar CRUD y comprobar persistencia
-        run: python3 tests/verificar_portabilidad.py
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Iniciar MySQL del equipo de pruebas
+        run: sudo systemctl start mysql.service
+      - name: Ejecutar CRUD con Java y MySQL nativos
+        env:
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_PORT: '3306'
+          MYSQL_USER: root
+          MYSQL_PASSWORD: root
+        run: python3 tests/verificar_mysql_local.py
       - name: Guardar informe
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: portabilidad
-          path: target/portabilidad.json
+          name: verificacion-mysql-local
+          path: target/verificacion-mysql-local.json
           if-no-files-found: ignore

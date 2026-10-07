@@ -1,8 +1,0 @@
-.git
-.idea
-.env
-.env.*
-target
-tests
-*.log
-nbproject/private

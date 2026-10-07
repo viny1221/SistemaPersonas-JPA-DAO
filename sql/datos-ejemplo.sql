@@ -1,4 +1,4 @@
--- Datos de ejemplo para una instalacion nueva del paquete Docker.
+-- Datos de ejemplo opcionales para una instalacion nueva.
 SET NAMES utf8mb4;
 USE escuela;
 INSERT IGNORE INTO persona (nombre, edad, correo) VALUES
