@@ -1,4 +1,8 @@
 target/
+datos/
+*.mv.db
+*.trace.db
+*.lock.db
 .idea/
 *.iml
 nbproject/private/

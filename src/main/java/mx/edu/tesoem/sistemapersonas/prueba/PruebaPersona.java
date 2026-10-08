@@ -18,47 +18,25 @@ public class PruebaPersona {
         System.out.println("====================================");
         System.out.println(" SISTEMA DE PERSONAS - JPA + DAO");
         System.out.println("====================================");
-        System.out.println("Base de datos: MySQL / " + JPAUtil.obtenerBase());
-        System.out.println("Servidor: " + JPAUtil.obtenerHost());
-        System.out.println("Puerto: " + JPAUtil.obtenerPuerto());
+        System.out.println("Base de datos integrada: H2");
+        System.out.println("Archivo: " + JPAUtil.obtenerBase() + ".mv.db");
         System.out.println();
 
-        // Datos de conexión a MySQL
-        String usuario = System.getenv("MYSQL_USER");
-        if (usuario == null || usuario.isBlank()) {
-            System.out.print("Usuario de MySQL [root]: ");
-            usuario = TECLADO.nextLine().trim();
-            if (usuario.isEmpty()) {
-                usuario = "root";
-            }
-        }
-
-        String contrasena = System.getenv("MYSQL_PASSWORD");
-        if (contrasena == null) {
-            if (System.console() != null) {
-                char[] password = System.console().readPassword("Contrasena de MySQL: ");
-                contrasena = password == null ? "" : new String(password);
-            } else {
-                System.out.print("Contrasena de MySQL: ");
-                contrasena = TECLADO.nextLine();
-            }
-        }
-
+        boolean inicioFallido = false;
         try {
 
-            JPAUtil.iniciar(usuario, contrasena);
+            JPAUtil.iniciar();
 
             System.out.println("Conexión JPA iniciada correctamente.");
             System.out.println(
-                    "La base '" + JPAUtil.obtenerBase() + "' y la tabla 'persona' "
-                    + "se crean si hacen falta."
+                    "La base y la tabla 'persona' se crean automáticamente."
             );
             System.out.println();
 
             ejecutarMenu();
 
         } catch (Exception e) {
-
+            inicioFallido = true;
             System.err.println();
             System.err.println("No fue posible iniciar la aplicación.");
             System.err.println(
@@ -67,14 +45,16 @@ public class PruebaPersona {
 
             System.err.println();
             System.err.println(
-                    "Verifica que MySQL esté encendido, "
-                    + "que el servidor y puerto configurados sean correctos y que "
-                    + "el usuario/contraseña sean correctos."
+                    "Verifica que la carpeta de datos permita escritura "
+                    + "y que no haya otra instancia del programa usando la misma base."
             );
 
         } finally {
 
             JPAUtil.cerrar();
+        }
+        if (inicioFallido) {
+            System.exit(1);
         }
     }
 

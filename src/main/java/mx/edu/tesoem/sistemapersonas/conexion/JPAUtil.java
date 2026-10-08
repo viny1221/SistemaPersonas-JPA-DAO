@@ -4,60 +4,45 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 public final class JPAUtil {
-
     private static EntityManagerFactory emf;
 
     private JPAUtil() {
     }
 
-    public static synchronized void iniciar(String usuario, String contrasena) {
+    public static synchronized void iniciar() {
         if (emf != null && emf.isOpen()) {
             return;
         }
-
-        String url = "jdbc:mysql://" + obtenerHost() + ":" + obtenerPuerto() + "/" + obtenerBase()
-                + "?createDatabaseIfNotExist=true"
-                + "&useSSL=false"
-                + "&allowPublicKeyRetrieval=true"
-                + "&serverTimezone=America/Mexico_City"
-                + "&characterEncoding=UTF-8";
-
+        Path base = obtenerBase();
+        try {
+            Files.createDirectories(base.getParent());
+        } catch (IOException e) {
+            throw new IllegalStateException("No se pudo crear la carpeta de datos: " + base.getParent(), e);
+        }
+        String url = "jdbc:h2:file:" + base.toString().replace('\\', '/');
         Map<String, Object> propiedades = new HashMap<>();
-        propiedades.put("jakarta.persistence.jdbc.driver", "com.mysql.cj.jdbc.Driver");
+        propiedades.put("jakarta.persistence.jdbc.driver", "org.h2.Driver");
         propiedades.put("jakarta.persistence.jdbc.url", url);
-        propiedades.put("jakarta.persistence.jdbc.user", usuario);
-        propiedades.put("jakarta.persistence.jdbc.password", contrasena);
-
+        propiedades.put("jakarta.persistence.jdbc.user", "sa");
+        propiedades.put("jakarta.persistence.jdbc.password", "");
         emf = Persistence.createEntityManagerFactory("SistemaPersonasPU", propiedades);
     }
 
-    public static String obtenerHost() {
-        return valorEntorno("MYSQL_HOST", "localhost");
-    }
-
-    public static int obtenerPuerto() {
-        int puerto = Integer.parseInt(valorEntorno("MYSQL_PORT", "3306"));
-        if (puerto < 1 || puerto > 65535) {
-            throw new IllegalArgumentException("MYSQL_PORT debe estar entre 1 y 65535.");
-        }
-        return puerto;
-    }
-
-    public static String obtenerBase() {
-        String base = valorEntorno("MYSQL_DATABASE", "sistema_personas");
-        if (!base.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
-            throw new IllegalArgumentException("MYSQL_DATABASE no es un nombre valido.");
+    public static Path obtenerBase() {
+        String carpeta = System.getenv("PERSONAS_DATA_DIR");
+        Path base = Path.of(carpeta == null || carpeta.isBlank() ? "datos" : carpeta)
+                .toAbsolutePath().normalize().resolve("sistema_personas");
+        if (base.toString().contains(";")) {
+            throw new IllegalArgumentException("La carpeta de datos no puede contener punto y coma.");
         }
         return base;
-    }
-
-    private static String valorEntorno(String nombre, String predeterminado) {
-        String valor = System.getenv(nombre);
-        return valor == null || valor.isBlank() ? predeterminado : valor.trim();
     }
 
     public static EntityManager getEntityManager() {

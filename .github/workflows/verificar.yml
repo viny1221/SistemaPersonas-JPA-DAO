@@ -1,4 +1,4 @@
-name: Verificar Java y MySQL local
+name: Verificar Java y base integrada
 on:
   push:
   pull_request:
@@ -6,7 +6,10 @@ permissions:
   contents: read
 jobs:
   portabilidad:
-    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -15,19 +18,15 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
-      - name: Iniciar MySQL del equipo de pruebas
-        run: sudo systemctl start mysql.service
-      - name: Ejecutar CRUD con Java y MySQL nativos
-        env:
-          MYSQL_HOST: 127.0.0.1
-          MYSQL_PORT: '3306'
-          MYSQL_USER: root
-          MYSQL_PASSWORD: root
-        run: python3 tests/verificar_mysql_local.py
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verificar CRUD y persistencia sin MySQL
+        run: python tests/verificar_base_integrada.py
       - name: Guardar informe
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: verificacion-mysql-local
-          path: target/verificacion-mysql-local.json
+          name: verificacion-base-integrada-${{ matrix.os }}
+          path: target/verificacion-base-integrada.json
           if-no-files-found: ignore
