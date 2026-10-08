@@ -18,8 +18,8 @@ public class PruebaPersona {
         System.out.println("====================================");
         System.out.println(" SISTEMA DE PERSONAS - JPA + DAO");
         System.out.println("====================================");
-        System.out.println("Base de datos integrada: H2");
-        System.out.println("Archivo: " + JPAUtil.obtenerBase() + ".mv.db");
+        System.out.println("Base de datos integrada: SQLite");
+        System.out.println("Archivo: " + JPAUtil.obtenerBase());
         System.out.println();
 
         boolean inicioFallido = false;

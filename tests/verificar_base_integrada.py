@@ -1,14 +1,16 @@
-"""Ejecuta el menú real contra archivos H2 nuevos, sin servidor ni credenciales."""
+"""Ejecuta el menú real contra archivos SQLite nuevos, sin servidor ni credenciales."""
 import json
 import os
 import re
 import shutil
+import sqlite3
 import subprocess
 import tempfile
+from contextlib import closing
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
-informe = {"motor": "H2 persistente", "pruebas": []}
+informe = {"motor": "SQLite persistente", "pruebas": []}
 
 
 def verificar(condicion, nombre):
@@ -35,13 +37,14 @@ def main():
     (RAIZ / "target" / "compilacion-base-integrada.txt").write_text(
         compilacion.stdout + compilacion.stderr, encoding="utf-8")
     verificar(compilacion.returncode == 0, "compilacion con Java 17")
-    verificar(not list((RAIZ / "target" / "dependency").glob("mysql*")),
-              "dependencias sin driver MySQL")
+    verificar(not list((RAIZ / "target" / "dependency").glob("mysql*"))
+              and not list((RAIZ / "target" / "dependency").glob("h2-*")),
+              "dependencias sin driver MySQL ni H2")
     classpath = str(RAIZ / "target" / "classes") + os.pathsep + str(RAIZ / "target" / "dependency" / "*")
     comando = [java, "-Dfile.encoding=UTF-8", "-cp", classpath,
                "mx.edu.tesoem.sistemapersonas.prueba.PruebaPersona"]
 
-    with tempfile.TemporaryDirectory(prefix="personas-h2-", dir=RAIZ / "target") as temporal:
+    with tempfile.TemporaryDirectory(prefix="personas-sqlite-", dir=RAIZ / "target") as temporal:
         carpeta = Path(temporal) / "PC con espacios y acentos á"
         carpeta.mkdir()
 
@@ -55,10 +58,14 @@ def main():
                       "inicio sin usuario ni contrasena MySQL")
             return resultado.stdout
 
-        archivo = carpeta / "datos" / "sistema_personas.mv.db"
+        archivo = carpeta / "datos" / "sistema_personas.sqlite3"
         salida = menu("1\n0\n")
         verificar(archivo.is_file() and "No hay personas registradas." in salida,
                   "primer arranque crea base y tabla vacias en la ruta predeterminada")
+        with closing(sqlite3.connect(archivo)) as conexion:
+            verificar(conexion.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+                      and conexion.execute("SELECT count(*) FROM persona").fetchone()[0] == 0,
+                      "archivo SQLite valido y tabla consultable desde otra herramienta")
         salida = menu("2\nMaría López\n28\nmaria@example.test\n0\n")
         encontrado = re.search(r"Persona guardada con ID:\s*(\d+)", salida)
         verificar(encontrado is not None, "insercion real con acentos")
@@ -71,6 +78,10 @@ def main():
         salida = menu("3\n" + persona_id + "\n0\n")
         verificar("nombre='María Actualizada'" in salida and "edad=29" in salida,
                   "persistencia de la edicion tras cerrar y abrir")
+        with closing(sqlite3.connect(archivo)) as conexion:
+            verificar(conexion.execute("SELECT id, nombre, edad FROM persona").fetchall()
+                      == [(int(persona_id), "María Actualizada", 29)],
+                      "ID y datos reales comprobados directamente en SQLite")
         salida = menu("2\nOtro registro\n20\nmaria@example.test\n1\n0\n")
         verificar("Ocurrió un error:" in salida and "María Actualizada" in salida
                   and "Persona guardada con ID:" not in salida,
