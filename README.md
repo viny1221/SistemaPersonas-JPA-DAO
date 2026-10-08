@@ -1,6 +1,6 @@
 # SistemaPersonas
 
-Programa de consola en Java para **agregar, consultar, editar y eliminar personas**. Guarda los datos en MySQL y permite verlos en MySQL Workbench.
+Programa de consola en Java para **agregar, consultar, editar y eliminar personas**. Al abrirlo por primera vez, crea su propia base **`sistema_personas`** y su tabla en MySQL de esa computadora. Puedes ver los datos en MySQL Workbench.
 
 [**Descargar proyecto ZIP**](https://github.com/viny1221/SistemaPersonas-JPA-DAO/archive/refs/heads/main.zip)
 
@@ -15,10 +15,11 @@ Para usar el iniciador de Windows, `java` y `mvn` deben estar disponibles en la 
 ## Cómo abrirlo
 
 1. Descarga el ZIP y extrae la carpeta.
-2. En Workbench, conecta a `localhost:3306` con tu usuario y contraseña de MySQL.
-3. Abre y ejecuta **`sql/escuela.sql`** para crear la base y la tabla.
-4. Si quieres las tres personas de ejemplo, ejecuta también **`sql/datos-ejemplo.sql`**.
-5. En Windows, abre **`Iniciar con MySQL local.cmd`** y escribe tus datos de conexión cuando los solicite.
+2. Asegúrate de que MySQL Server esté encendido.
+3. En Windows, abre **`Iniciar con MySQL local.cmd`** y escribe el usuario y la contraseña de MySQL de esa computadora.
+4. El programa crea la base y la tabla si faltan y muestra el menú. **No necesitas ejecutar archivos SQL antes.**
+
+El usuario de MySQL debe tener permisos para crear la base y sus tablas. La base empieza vacía y los datos que agregues permanecen al cerrar el programa.
 
 **En NetBeans:** abre la carpeta que contiene `pom.xml` y pulsa **F6**.
 
@@ -44,6 +45,12 @@ mvn exec:java
 | 5 | Eliminar persona |
 | 0 | Salir |
 
-Los datos permanecen al cerrar el programa. Para verlos en Workbench, ejecuta **`sql/Consultar-personas.sql`**.
+## Ver la base en Workbench
 
-Cada computadora utiliza su propia base `escuela` y sus propias credenciales de MySQL.
+Conecta a `localhost:3306` con las mismas credenciales, actualiza **Schemas** y abre **`sistema_personas`**. Ejecuta **`sql/Consultar-personas.sql`** para ver los registros.
+
+Si quieres tres personas de ejemplo, ejecuta **`sql/datos-ejemplo.sql`** después del primer arranque. Es opcional y no reemplaza los registros existentes.
+
+**Cada computadora tiene su propia base y sus propias credenciales.** GitHub entrega el código y los scripts; no incluye tus registros ni una contraseña. Descargar el proyecto no lo conecta a tu computadora.
+
+Para usar otro nombre de base o servidor, configura `MYSQL_DATABASE`, `MYSQL_HOST` y `MYSQL_PORT`. Por defecto utiliza `sistema_personas` en `localhost:3306`.

@@ -48,7 +48,7 @@ public final class JPAUtil {
     }
 
     public static String obtenerBase() {
-        String base = valorEntorno("MYSQL_DATABASE", "escuela");
+        String base = valorEntorno("MYSQL_DATABASE", "sistema_personas");
         if (!base.matches("[a-zA-Z_][a-zA-Z0-9_]*")) {
             throw new IllegalArgumentException("MYSQL_DATABASE no es un nombre valido.");
         }

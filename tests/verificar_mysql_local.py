@@ -59,9 +59,12 @@ def main():
         return int(sql('SELECT COUNT(*) FROM `' + base_prueba + '`.persona;').strip())
 
     try:
-        esquema = (RAIZ / 'sql' / 'escuela.sql').read_text(encoding='utf-8-sig')
+        salida = menu('1\n0\n')
+        verificar(contar() == 0 and 'No hay personas registradas.' in salida,
+                  'primer arranque crea su propia base y tabla sin ejecutar SQL')
+        esquema = (RAIZ / 'sql' / 'crear-base.sql').read_text(encoding='utf-8-sig')
         ejemplos = (RAIZ / 'sql' / 'datos-ejemplo.sql').read_text(encoding='utf-8-sig')
-        sql(re.sub(r'\bescuela\b', base_prueba, esquema + '\n' + ejemplos))
+        sql(re.sub(r'\bsistema_personas\b', base_prueba, esquema + '\n' + ejemplos))
         verificar(contar() == 3, 'tres personas de ejemplo en una base nueva')
         salida = menu('1\n0\n')
         verificar(all(nombre in salida for nombre in ('Juan', 'María', 'Pedro')), 'listado y acentos correctos')
@@ -80,7 +83,7 @@ def main():
         verificar('Persona eliminada correctamente' in salida and 'No existe una persona con ID ' + persona_id in salida and contar() == 3, 'eliminacion comprobada')
         informe['resultado'] = 'aprobado'
     finally:
-        # Solo elimina el nombre aleatorio creado por esta prueba, nunca escuela.
+        # Solo elimina el nombre aleatorio creado por esta prueba.
         if not re.fullmatch(r'personas_prueba_[0-9a-f]{12}', base_prueba):
             raise RuntimeError('Nombre de base temporal inesperado; se cancelo la limpieza.')
         sql('DROP DATABASE IF EXISTS `' + base_prueba + '`;')

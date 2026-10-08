@@ -1,11 +1,11 @@
 -- Este script es opcional.
 -- Hibernate puede crear automáticamente la base y la tabla con la configuración del proyecto.
 
-CREATE DATABASE IF NOT EXISTS escuela
+CREATE DATABASE IF NOT EXISTS sistema_personas
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
-USE escuela;
+USE sistema_personas;
 
 CREATE TABLE IF NOT EXISTS persona (
     id INT NOT NULL AUTO_INCREMENT,

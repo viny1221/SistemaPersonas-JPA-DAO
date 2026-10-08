@@ -47,15 +47,17 @@ La URL usa:
   createDatabaseIfNotExist=true
 
 Por eso, si el usuario de MySQL tiene permisos, se crea automáticamente la base:
-  escuela
+  sistema_personas
 
 y Hibernate crea/actualiza la tabla:
   persona
 
-Si tu usuario root no tiene permiso para crear bases, ejecuta primero:
-  sql/escuela.sql
+El usuario de MySQL debe tener permisos para crear esta base y sus tablas.
+No es necesario ejecutar SQL antes de iniciar el programa.
+Si un administrador quiere crear la estructura manualmente, puede usar:
+  sql/crear-base.sql
 
-desde MySQL Workbench.
+Los datos quedan en MySQL de cada computadora y permanecen al volver a abrir.
 
 QUÉ EXPLICAR AL PROFESOR
 ------------------------

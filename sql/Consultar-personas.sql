@@ -1,6 +1,5 @@
--- Ejecuta este archivo en MySQL Workbench despues de preparar escuela.sql
--- o de iniciar la aplicacion Java correctamente.
-USE escuela;
+-- Ejecuta este archivo en MySQL Workbench despues de iniciar la aplicacion.
+USE sistema_personas;
 
 SHOW TABLES;
 
